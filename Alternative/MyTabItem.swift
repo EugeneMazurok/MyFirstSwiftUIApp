@@ -1,18 +1,18 @@
-//
-//  MyTabItem.swift
-//  Alternative
-//
-//  Created by Евгений Мазурок on 14.03.2024.
-//
-
 import SwiftUI
 
-struct MyTabItem: View {
+struct MyTabItem<Content: View>: View {
+    var content: Content
+    var text:String
+    
+    var image:String
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
+        NavigationView{
+            content
+        }
+                .tabItem {
+                    Image(systemName: image)
+                    Text(text)
+                }
 
-#Preview {
-    MyTabItem()
+    }
 }

@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+struct AnswerOption {
+    var option: String
+    var pointValue: Int
+}

@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+struct Job: Codable {
+    var name: String
+}

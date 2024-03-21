@@ -1,70 +1,82 @@
 import SwiftUI
-import Firebase
+import Combine
 
-struct AuthenticationView: View {
-    @State private var email = ""
-    @State private var password = ""
-    @State private var isSignUp = false
-    @State private var alertMessage = ""
-    @State private var showAlert = false
-    
+struct LoginView: View {
+    @State  var email = ""
+    @State  var password = ""
+    @ObservedObject  var firebaseManager:FirebaseManager
+    @State private var cancellables = Set<AnyCancellable>()
+    @State var showPassword: Bool = false
+
     var body: some View {
-        VStack {
-            Text(isSignUp ? "Sign Up" : "Log In")
-                .font(.title)
-                .padding()
-            
-            TextField("Email", text: $email)
-                .padding()
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            
-            SecureField("Password", text: $password)
-                .padding()
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-            
-            if isSignUp {
-                Button("Sign Up") {
-                    signUp()
+        NavigationView {
+            VStack {
+
+                AsyncImage(url: URL(string: "https://i.getgems.io/vj90-sDsKtOBCLjCBH7H4up2AnoX7JPFusafxZjjTPI/rs:fill:200:200:1/g:ce/czM6Ly9nZXRnZW1zLW5mdC9uZnQvYy82NWQ2MTYyMTU1Njg2NGZmMmRmYzBjMzYvYXZhdGFyLzM5ODA4MS5wbmc"))
+                    .padding(.top)
+                    .padding(.top)
+                    .padding(.top)
+                    .padding(.top)
+                TextField("Почта",
+                          text: $email ,
+                          prompt: Text("Почта").foregroundColor(Color.gosBlue)
+                )
+                .textInputAutocapitalization(.never)
+                .keyboardType(.emailAddress)
+                .padding(10)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gosBlue, lineWidth: 2)
                 }
-                .padding()
-            } else {
-                Button("Log In") {
-                    logIn()
+                .padding(.horizontal)
+                
+                HStack {
+                    Group {
+                        if showPassword {
+                            TextField("Пароль",
+                                      text: $password,
+                                      prompt: Text("Пароль").foregroundColor(Color.gosBlue))
+                        } else {
+                            SecureField("Пароль",
+                                        text: $password,
+                                        prompt: Text("Пароль").foregroundColor(Color.gosBlue))
+                        }
+                        
+                    }
+                    .padding(10)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.gosBlue, lineWidth: 2)
+                    }
+                    Button {
+                            showPassword.toggle()
+                        } label: {
+                            Image(systemName: showPassword ? "eye.slash" : "eye")
+                        }
+                }.padding()
+                
+                Button(action: {
+                    firebaseManager.loginUser(email: email, password: password)
+                }) {
+                    Text("Войти").foregroundStyle(.white)
+                        .bold()
                 }
-                .padding()
+                .frame(height: 50)
+                            .frame(maxWidth: .infinity)
+                            
+                            .background {
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.gosBlue, lineWidth: 2)
+                                    .background(Color.gosBlue.cornerRadius(10))
+                            }
+                            .padding(.horizontal)
+                Spacer()
             }
             
-            Button(isSignUp ? "Already have an account? Log In" : "Don't have an account? Sign Up") {
-                isSignUp.toggle()
-            }
-            .padding()
-        }
-        .alert(isPresented: $showAlert) {
-            Alert(title: Text("Error"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
-        }
-        .padding()
-    }
-    
-    func signUp() {
-        Auth.auth().createUser(withEmail: email, password: password) { result, error in
-            if let error = error {
-                alertMessage = error.localizedDescription
-                showAlert = true
-            } else {
-                print("User signed up successfully")
-            }
-        }
-    }
-    
-    func logIn() {
-        Auth.auth().signIn(withEmail: email, password: password) { result, error in
-            if let error = error {
-                alertMessage = error.localizedDescription
-                showAlert = true
-            } else {
-                print("User logged in successfully")
-                // Navigate to the next screen or perform any necessary actions
-            }
+
+            .padding(.horizontal)
+            
+
         }
     }
 }

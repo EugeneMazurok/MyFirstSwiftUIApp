@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct Order{
+    var deliveryDate: String
+    var altushka: String
+    var user: String
+}

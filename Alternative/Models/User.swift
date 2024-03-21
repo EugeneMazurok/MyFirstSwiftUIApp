@@ -1,12 +1,11 @@
 import Foundation
 
-struct User {
-    let id: String = UUID().uuidString
+struct MyUser: Hashable, Codable{
     var name: String
     var email: String
     var age: Int
-    var weight: Double
+    var weight: Int
     var alcoholStage: Int
-    var job: String
-
+    var isConfirmed: String
+    var score: Int
 }

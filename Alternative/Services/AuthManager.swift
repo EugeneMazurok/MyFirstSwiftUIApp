@@ -1,29 +1,41 @@
-//
-//  FirebaseAuthService.swift
-//  Alternative
-//
-//  Created by Евгений Мазурок on 13.03.2024.
-//
-
-import Foundation
 import Firebase
 
 class AuthManager {
-        enum AuthState {
-            case undefined, signedOut, signedIn
-        }
-        
-        @Published var authState: AuthState = .undefined
-        @Published var currentUser: FirebaseAuth.User?
-        
-        init() {
-            Auth.auth().addStateDidChangeListener { auth, user in
-                self.currentUser = user
-                self.authState = user != nil ? .signedIn : .signedOut
+    let db = Firestore.firestore()
+    
+    func signIn(email: String, password: String, isAuthenticated: @escaping (Bool) -> Void) {
+        Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+            if let error = error {
+                isAuthenticated(false)
+            } else {
+                if let user = Auth.auth().currentUser {
+                    let usersRef = self.db.collection("users").whereField("email", isEqualTo: user.email ?? "")
+                    usersRef.getDocuments { snapshot, error in
+                        if let error = error {
+                            isAuthenticated(false)
+                        } else if snapshot?.documents.isEmpty ?? true {
+                            self.db.collection("users").document(user.uid).setData([
+                                "age": 0,
+                                "email": user.email ?? "",
+                                "gender": "",
+                                "id": user.uid,
+                                "name": "",
+                                "role":""
+                            ]) { error in
+                                if let error = error {
+                                    isAuthenticated(false)
+                                } else {
+
+                                    isAuthenticated(true)
+                                }
+                            }
+                        } else {
+                            // User already exists, perform necessary actions
+                            isAuthenticated(true)
+                        }
+                    }
+                }
             }
         }
-
-    func signIn(email: String, password: String, completion: @escaping (AuthDataResult?, Error?) -> Void) {
-        Auth.auth().signIn(withEmail: email, password: password, completion: completion)
     }
 }

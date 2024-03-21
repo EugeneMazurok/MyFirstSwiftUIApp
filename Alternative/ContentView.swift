@@ -2,28 +2,30 @@ import SwiftUI
 
 
 struct ContentView: View {
-    @State private var isAuthenticated: Bool = false
+
     @State private var selection = 1
+    @ObservedObject var firebaseManager = FirebaseManager.shared
+
+    
     var body: some View {
-        if isAuthenticated {
+        if firebaseManager.isAuth {
             TabView (selection: $selection) {
-                MyTabItem(content: EmptyView(), text:"Для симметричности",
+                MyTabItem(content: EmptyView(), text:"Для симметрии",
                           image:"circle.fill"
                 )
                 .tag(0)
-                MyTabItem(content: HomeView(), text:"Главная",
-                          image:"circle.fill"
+                MyTabItem(content: HomeView(firebaseManager: firebaseManager), text:"Главная",
+                          image:"house.fill"
                 )
                 .tag(1)
-                MyTabItem(content: EmptyView(), text:"Профиль",
-                          image:"circle.fill"
+                MyTabItem(content: ProfileView(firebaseManager: firebaseManager), text:"Профиль",
+                          image:"face.smiling.inverse"
                 )
                 .tag(2)
             }
-            
         }
         else {
-            LoginView(isAuthenticated: $isAuthenticated)
+            LoginView(firebaseManager: firebaseManager)
         }
     }
 }

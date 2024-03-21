@@ -6,3 +6,11 @@
 //
 
 import Foundation
+
+struct Question {
+
+
+    var question: String
+    var answerOptions: [AnswerOption]
+}
+

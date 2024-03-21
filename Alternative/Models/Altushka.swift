@@ -7,10 +7,9 @@
 
 import Foundation
 
-struct Altushka: Hashable{
-    var id: String = UUID().uuidString
+struct Altushka: Hashable, Codable{
     var name: String
-    var tags: [String]
+    var tags: String
     var photo: String
     var isFree: Bool
 }
